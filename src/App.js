@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import Card from './Card';
+
+const apiUrl = 'http://isaac-doro.herokuapp.com';
+let fetchedData = [];
+
+function fetchApi(url) {
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      fetchedData = data;
+      console.log("fetchApi", fetchedData);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
 
 function App() {
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          fetchApi(apiUrl);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+        <h1>Latitude {latitude} </h1>
+     
+        <h1>Longitude {longitude} </h1>
+
+        <Card />
+
     </div>
   );
 }
+
 
 export default App;
