@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Card from './Card';
+
 
 function App() {
   const [latitude, setLatitude] = useState(null);
@@ -22,13 +24,15 @@ function App() {
 
   return (
     <div>
+        <h1>Latitude {latitude} </h1>
+     
+        <h1>Longitude {longitude} </h1>
 
-      <h1>Latitude: {latitude}</h1>
-      <h1>Longitude: {longitude}</h1>
-
+        <Card />
 
     </div>
   );
 }
+
 
 export default App;
