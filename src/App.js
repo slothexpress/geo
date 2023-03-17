@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-let apiUrl = 'http://isaac-doro.herokuapp.com/59/14';
+const rootUrl = 'http://isaac-doro.herokuapp.com/';
+let apiUrl = rootUrl;
 
 function fetchApi(url, setIncidents) {
+  console.log("url: ", url)
   fetch(url)
     .then(response => response.json())
     .then(data => {
@@ -25,16 +27,19 @@ function App() {
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          apiUrl = apiUrl + "/" + latitude + "/" + longitude;
-          fetchApi(apiUrl, setIncidents);
+          if(latitude && longitude) {
+            apiUrl = rootUrl + "/" + latitude + "/" + longitude;
+          }
         },
         (error) => {
+          apiUrl = rootUrl;
           console.log(error);
         }
       );
     } else {
       console.log("Geolocation was not approved by user or is not supported in this browser.");
     }
+    fetchApi(apiUrl, setIncidents);
   }, []);
 
   if (incidents.length === 0) {
@@ -56,7 +61,6 @@ function App() {
             <h3>{incident.description}</h3>
             
             <p>- - - - - - - - - - - -</p>
-            
           </div>
           ))}
         
