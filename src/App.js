@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Card from './Card';
 
-const apiUrl = 'http://isaac-doro.herokuapp.com';
-let fetchedData = [];
+let apiUrl = 'http://isaac-doro.herokuapp.com/59/14';
 
-function fetchApi(url) {
+function fetchApi(url, setIncidents) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
-      fetchedData = data;
-      console.log("fetchApi", fetchedData);
+      setIncidents(data);
+      console.log("fetchApi", data);
     })
     .catch(error => {
       console.log(error);
@@ -19,6 +17,7 @@ function fetchApi(url) {
 function App() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [incidents, setIncidents] = useState([]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -26,27 +25,36 @@ function App() {
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          fetchApi(apiUrl);
+          apiUrl = apiUrl + "/" + latitude + "/" + longitude;
+          fetchApi(apiUrl, setIncidents);
         },
         (error) => {
           console.log(error);
         }
       );
     } else {
-      console.log("Geolocation is not supported by this browser.");
+      console.log("Geolocation was not approved by user or is not supported in this browser.");
     }
   }, []);
-  return (
-    <div>
-        <h1>Latitude {latitude} </h1>
-     
-        <h1>Longitude {longitude} </h1>
 
-        <Card />
+  if (incidents.length === 0) {
+    return (
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
+  } else {
+    return (
+      <div>
 
-    </div>
-  );
+        <h2>Prio {incidents[0].priority}:</h2>
+        <h2>{incidents[0].title}</h2>
+        <h3>{incidents[0].exactlocation}</h3>
+        <h3>{incidents[0].description}</h3>
+        
+      </div>
+    );
+  }
 }
-
 
 export default App;
