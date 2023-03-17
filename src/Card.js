@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function Card() {
-    const apiUrl = 'http://localhost:8080/15/59';
+    const apiUrl = 'http://isaac-doro.herokuapp.com';
     const [nodes, setNodes] = useState([]);
 
     useEffect(() => {
