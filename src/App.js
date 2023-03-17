@@ -46,11 +46,23 @@ function App() {
   } else {
     return (
       <div>
+        <div>
+        
+          {incidents.map((incident) => (
+          <div key={incident.id}>
+            <h2>Prio {incident.priority}:</h2>
+            <h2>{incident.title}</h2>
+            <h3>{incident.exactlocation}</h3>
+            <h3>{incident.description}</h3>
+            
+            <p>- - - - - - - - - - - -</p>
+            
+          </div>
+          ))}
+        
 
-        <h2>Prio {incidents[0].priority}:</h2>
-        <h2>{incidents[0].title}</h2>
-        <h3>{incidents[0].exactlocation}</h3>
-        <h3>{incidents[0].description}</h3>
+        </div>
+
         
       </div>
     );
