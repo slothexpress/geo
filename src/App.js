@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-const rootUrl = 'http://isaac-doro.herokuapp.com/';
-let apiUrl = rootUrl;
+const rootUrl = 'http://isaac-doro.herokuapp.com';
+
 
 function fetchApi(url, setIncidents) {
   console.log("url: ", url)
@@ -22,25 +22,41 @@ function App() {
   const [incidents, setIncidents] = useState([]);
 
   useEffect(() => {
+    const fetchData = () => {
+      console.log("fetching...");
+      if (latitude && longitude) {
+        const lat = latitude.toString();
+        const lon = longitude.toString();
+        const apiUrl = `${rootUrl}/${lat}/${lon}`;
+        fetchApi(apiUrl, setIncidents);
+
+      } else {
+        fetchApi(rootUrl, setIncidents);
+      }
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          if(latitude && longitude) {
-            apiUrl = rootUrl + "/" + latitude + "/" + longitude;
-          }
         },
         (error) => {
-          apiUrl = rootUrl;
           console.log(error);
         }
       );
     } else {
-      console.log("Geolocation was not approved by user or is not supported in this browser.");
+      console.log("Geolocation has not been shared by user OR is not supported by this browser.");
     }
-    fetchApi(apiUrl, setIncidents);
-  }, []);
+
+    // Fetch data initially and then every 2 sec
+    fetchData();
+    const intervalId = setInterval(fetchData, 2000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [latitude, longitude]);
 
   if (incidents.length === 0) {
     return (
@@ -48,28 +64,42 @@ function App() {
         <h1>Loading...</h1>
       </div>
     );
+  } else if (longitude && latitude) {
+    return (
+      <div>
+        <p>Latitude: {latitude}</p>
+        <p>Longitude: {longitude}</p>
+        --------------------
+        <div>
+          {incidents.map((incident) => (
+            <div key={incident.id}>
+              <h2>Prio {incident.priority}:</h2>
+              <h2>{incident.title}</h2>
+              <h3>{incident.exactlocation}</h3>
+              <h3>{incident.description}</h3>
+              <h3>{incident.category}</h3>
+              <p>- - - - - - - - - - - -</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   } else {
     return (
       <div>
-        <div>
-        
+        <p>Waiting for location...</p>
           {incidents.map((incident) => (
-          <div key={incident.id}>
-            <h2>Prio {incident.priority}:</h2>
-            <h2>{incident.title}</h2>
-            <h3>{incident.exactlocation}</h3>
-            <h3>{incident.description}</h3>
-            
-            <p>- - - - - - - - - - - -</p>
-          </div>
+            <div key={incident.id}>
+              <h2>Prio {incident.priority}:</h2>
+              <h2>{incident.title}</h2>
+              <h3>{incident.exactlocation}</h3>
+              <h3>{incident.description}</h3>
+              <h3>{incident.category}</h3>
+              <p>- - - - - - - - - - - -</p>
+            </div>
           ))}
-        
-
         </div>
-
-        
-      </div>
-    );
+    )
   }
 }
 
